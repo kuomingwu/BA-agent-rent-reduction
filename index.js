@@ -6,6 +6,7 @@ import bodyParser  from 'body-parser';
 import helmet from 'helmet';
 import * as aws from './module/aws';
 import * as jwt from './module/jwt';
+import * as webinar from './module/webinar';
 import multer from 'multer';
 import bearerToken from 'express-bearer-token';
 const {parse, stringify} = require('flatted/cjs');
@@ -35,6 +36,40 @@ const {
     AWS_S3_REGION ,
     AWS_S3_BUCKET
 } = process.env ; 
+
+app.group('/webinar' , (router)=>{
+	router.get('/token' , async(req , res , next)=>{
+		try {
+			let accessToken = await webinar.getAccessToken();
+			return res.send(accessToken) ; 
+		}catch(e){
+			console.info({ e });
+			return res.status(500).send({ error : "get token error" })
+		}
+	})
+	router.post('/meeting' , async(req , res , next)=>{
+		const { subject , description , times } = req.body ;
+		try {
+			let meeting =	await webinar.create({ subject , description , times });
+			return res.send(meeting);
+		}catch(e){
+			console.info({ e });
+			return res.status(500).send({ error : "create meeting failed" })
+		}
+	})
+	router.post('/meeting/:webinarKey' , async(req , res , next)=>{
+		const { webinarKey } = req.params ; 
+		const { firstName , lastName , email } = req.body ; 
+		try {
+			let register =	await webinar.register({webinarKey , firstName , lastName , email });
+			return res.send(register);
+		}catch(e){
+			console.info({ e });
+			return res.status(500).send({ error : "register meeting failed" })
+		}
+		//INSERT INTO `aws-hack`.activity (webinarKey , name ) VALUES("8180537342144951054" , "ba") ON DUPLICATE KEY UPDATE webinarKey="xxx"
+	})
+})
 
 app.group('/api' , (router)=>{
 	
@@ -98,7 +133,7 @@ app.group('/api' , (router)=>{
 			
 			const url = `https://${AWS_S3_BUCKET}.s3-${AWS_S3_REGION}.amazonaws.com/${fileName}`
 			
-			res.send({ ...r , endpoint : url });
+			res.send({ ...r , endpoint : url , fileName });
 			
 				
 			

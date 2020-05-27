@@ -1,9 +1,9 @@
 import React from 'react';
-import BackgroundImage from '../assets/BA/informationcounter.jpg';
+import BackgroundImage from '../../assets/BA/informationcounter.jpg';
 import styled from 'styled-components';
-import Embed from '../components/Embed';
-import Lady from '../assets/BA/chatbotaa.jpg';
-import FaceReg from '../components/FaceReg';
+import Embed from '../../components/Embed';
+import Lady from '../../assets/BA/chatbotaa.jpg';
+import FaceReg from '../../components/FaceReg';
 
 const Background = styled.div `
     background-image : url(${BackgroundImage});
@@ -42,7 +42,7 @@ const Pins = [
 ]
 
 
-const BaLobby = () =>{
+const Lobby = () =>{
     
     return (
         <Background>
@@ -56,4 +56,4 @@ const BaLobby = () =>{
 }
 
 
-export default BaLobby ; 
+export default Lobby ; 

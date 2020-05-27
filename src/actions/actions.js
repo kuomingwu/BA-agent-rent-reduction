@@ -23,6 +23,10 @@ export function dataURItoBlob(dataURI) {
 
     return new Blob([ia], {type:mimeString});
 }
+
+
+
+
 export async function identifyUser(base64Image){
     const endpoint = `${REACT_APP_API_DOMAIN}/api/face/verify`;
     const formData = new FormData();
