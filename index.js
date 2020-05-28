@@ -16,6 +16,7 @@ const session = require('express-session');
 const app = express();
 const upload = multer();
 const http = require('http').Server(app);
+const https = require('https').Server(app);
 const io = require('socket.io')(http);
 
 app.use(express.static('src'));
@@ -300,6 +301,12 @@ io.on('connection', (socket) => {
 	})
 })
 
-const server = http.listen(process.env.SERVER_PORT || 3001, () => {
-	console.log('Started');
-});
+if(process.env.DEBUG_MODE == 'true'){
+	const server = http.listen(process.env.SERVER_PORT || 3001, () => {
+		console.log('Started dev');
+	});
+}else{
+	const server = https.listen(process.env.SERVER_PORT || 3001, () => {
+		console.log('Started prod');
+	});
+}
