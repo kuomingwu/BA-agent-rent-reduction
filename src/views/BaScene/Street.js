@@ -16,8 +16,8 @@ const Street = ({ activity , onChangeScene })=>{
         {
             width : `calc(100vw / 10)`,
             height : `calc(100vh / 4)`,
-            top : `48%`,
-            left : `45%`,
+            top : `32%`,
+            left : `35%`,
             path : `20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%`,
             onClick : ()=>{
                 onChangeScene(2);

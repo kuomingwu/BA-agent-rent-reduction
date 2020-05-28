@@ -73,3 +73,14 @@ export async function registerActivity({ activityId , firstName , lastName , ema
     }) ).data
 
 }
+
+export async function getUserByToken(){
+    const accessToken = Cookie.get("accessToken");
+    const endpoint = `${REACT_APP_API_DOMAIN}/api/token/auth`
+    return ( await axios.get(endpoint, {
+        headers: {
+            Authorization : `Bearer ${accessToken}`
+        }
+    }) ).data
+
+}

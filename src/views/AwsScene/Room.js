@@ -1,6 +1,6 @@
 import React , { useEffect , useState }from 'react';
 import styled from 'styled-components';
-import BackgroundImage from '../../assets/BA/meetingroom.jpg';
+import BackgroundImage from '../../assets/AWS/awsbackground.jpg';
 import Webinar from '../../components/Webinar'
 import { getUserByToken } from '../../actions/actions';
 import { notification } from 'antd';

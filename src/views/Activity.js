@@ -40,7 +40,7 @@ const Activity = () =>{
             }
             {
                 (activity.scene == "aws") && (
-                    <Aws.Lobby activity={activity}></Aws.Lobby>
+                    <Aws.Scene activity={activity}></Aws.Scene>
                 )
             }
         </Wrapper>

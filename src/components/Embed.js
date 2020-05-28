@@ -97,7 +97,7 @@ const Embed = (props) =>{
         if(type == "link"){
            return window.open(source , "_blank");
         }
-        if(type == "video" || type == "youtube" || type == "chatbot" || type == "component"){
+        if(type == "video" || type == "youtube" || type == "chatbot" || type == "component" || "webinar"){
             
             return setVisible(true);
         }
@@ -179,11 +179,19 @@ const Embed = (props) =>{
                             props.source
                         )
                     }
+                    {
+                        ( props.type == "webinar" ) && (
+                            props.source
+                        )
+                    }
                 </ModalStyle>
             </Modal>
             
         </EmbedWrapper>
     )
 }
+
+
+
 
 export default Embed ;
