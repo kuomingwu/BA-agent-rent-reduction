@@ -1,7 +1,13 @@
 import React , { useState , useEffect } from 'react';
 import styled from 'styled-components';
-import { Input , Upload , message } from 'antd';
+import { Input , Upload , message , Spin , Button   } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { useParams } from 'react-router';
+import { getActivityByActivityId , registerActivity } from '../actions/actions';
+import * as Ba from './BaScene/Route';
+import * as Aws from './AwsScene/Route';
+
+
 require('dotenv').config()
 
 const { REACT_APP_API_DOMAIN } = process.env ; 
@@ -60,14 +66,29 @@ const QuestionHighLightTitle = styled.h1 `
     margin : 5px ;
 `
 
-const Form = ({ banner }) =>{
+const Form = () =>{
     const [ loading , setLoading ] = useState(false);
     const [ imageUrl , setImageUrl ] = useState(null);
     const [ fileName , setFileName ] = useState("");
     const [ firstName , setFirstName ] = useState("");
     const [ lastName , setLastName ] = useState("");
     const [ email , setEmail ] = useState("");
+    const [ activity , setActivity ] = useState({});
+    const [ init , setInit ] = useState(false);
 
+    const { activityId } = useParams();
+
+    async function initAction(){
+        const result = await getActivityByActivityId({ activityId });
+        setInit(true);
+        setActivity(result.activity);
+    }
+
+    useEffect(()=>{
+        if(init == false){
+            initAction();
+        }
+    }, [init])
     
     const handleChange = info => {
         if (info.file.status === 'uploading') {
@@ -111,15 +132,28 @@ const Form = ({ banner }) =>{
           <div className="ant-upload-text">Upload</div>
         </div>
       );
+    
+    
 
     return (
+    <Spin spinning={!init}>
         <BkWrapper>
             <Wrapper>
-                <Banner image={banner} />
+                {
+                    (activity.scene == "ba") && (
+                        <Banner image={Ba.Banner} />
+                    )
+                }
+                {
+                    (activity.scene == "aws") && (
+                        <Banner image={Aws.Banner} />
+                    )
+                }
+               
 
                 <QuestionWrapper>
                     <QuestionContent>
-                        <QuestionHighLightTitle>歡迎註冊BA商務中心演講活動</QuestionHighLightTitle>            
+                        <QuestionHighLightTitle>歡迎註冊 { activity.name } 活動</QuestionHighLightTitle>            
                     </QuestionContent>
                 </QuestionWrapper>
 
@@ -168,10 +202,26 @@ const Form = ({ banner }) =>{
 
                     </QuestionContent>
                 </QuestionWrapper>
-
+                <Button onClick={async()=>{
+                    setInit(false)
+                    try {
+                        
+                        await registerActivity({
+                            activityId , firstName , lastName , email , avatar : fileName
+                        });
+                        message.success('註冊成功');
+                        setInit(true);
+                    }catch(e){
+                        message.error('註冊失敗');
+                        setInit(true);
+                    }
+                }} type="primary" block>
+                    報名
+                </Button>
 
             </Wrapper>
         </BkWrapper>
+    </Spin>
     )
 
 }

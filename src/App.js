@@ -5,8 +5,8 @@ import * as Ba from './views/BaScene/Route';
 import styled from 'styled-components';
 import * as Aws from './views/AwsScene/Route';
 import Form from './views/Form';
-import BaBanner from './assets/BA/informationcounter.jpg';
 
+import Activity from './views/Activity';
 
 const Wrapper = styled.div `
   width : 100vw ;
@@ -32,7 +32,17 @@ const App = () => {
 
       <Route exact path={`/ba/register`}>
         <Wrapper>
-          <Form banner={BaBanner}></Form>
+          <Form></Form>
+        </Wrapper>
+      </Route>
+
+      <Route exact path={`/activity/:activityId`}>
+        <Activity />
+      </Route>
+
+      <Route exact path={`/activity/:activityId/register`}>
+        <Wrapper>
+          <Form></Form>
         </Wrapper>
       </Route>
 

@@ -49,3 +49,28 @@ export async function identifyUser(base64Image){
     
 
 }
+
+
+export async function getActivityByActivityId({ activityId }){
+    const endpoint = `${REACT_APP_API_DOMAIN}/api/activity/${activityId}`;
+    return ( await axios.get(endpoint, {
+        headers: {
+
+        }
+    }) ).data
+
+}
+
+
+export async function registerActivity({ activityId , firstName , lastName , email , avatar }){
+    
+    const endpoint = `${REACT_APP_API_DOMAIN}/api/activity/${activityId}/register`;
+    return ( await axios.post(endpoint,{
+        firstName , lastName , email , avatar
+    } , {
+        headers: {
+
+        }
+    }) ).data
+
+}

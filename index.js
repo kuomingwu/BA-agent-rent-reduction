@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import * as aws from './module/aws';
 import * as jwt from './module/jwt';
 import * as webinar from './module/webinar';
+import * as activity from './module/activity';
 import multer from 'multer';
 import bearerToken from 'express-bearer-token';
 const {parse, stringify} = require('flatted/cjs');
@@ -37,6 +38,61 @@ const {
     AWS_S3_BUCKET
 } = process.env ; 
 
+app.group('/api/activity' , (router)=>{
+
+	router.get('/:activityId' , async (req , res , next)=>{
+		const { activityId } = req.params ;
+		try {
+			let result = await activity.getActivityMettingById({ activityId });
+
+			res.send( { activity : result } ) ;
+		}catch(e){
+			console.info({ e })
+			res.status(500).send({ error : "get activity failed" });
+		}
+	})
+
+	router.post('/:activityId/register' , async (req , res , next)=>{
+		//register all meeting from activity
+		const { activityId } = req.params ; 
+		const { firstName , lastName , email , avatar } = req.body ; 
+		let { meetings } = await activity.getActivityMettingById({ activityId });
+		
+		let jobs = meetings.map(async( { webinarKey } )=>{
+
+			try {
+				console.info({ webinarKey , firstName , lastName , email });
+				let { joinUrl , hijackEmail } =	await webinar.register({webinarKey , firstName , lastName , email });
+				
+				//create link
+				const data = {
+					joinUrl , 
+					webinarKey , 
+					firstName , 
+					lastName , 
+					email , 
+					hijackEmail ,
+					activityId , 
+					avatar
+				}
+				await activity.createRegisterLink(data);
+				await activity.sendRegisterConfirmEamil(data);
+				return data ; 
+			}catch(e){
+				console.info({ e });
+				return res.status(500).send({ error : "activity register failed" });
+			} 
+
+		})
+		Promise.all(jobs).then((values)=>{
+
+			return res.send(values);
+		})
+
+	})
+})
+
+
 app.group('/webinar' , (router)=>{
 	router.get('/token' , async(req , res , next)=>{
 		try {
@@ -57,19 +113,54 @@ app.group('/webinar' , (router)=>{
 			return res.status(500).send({ error : "create meeting failed" })
 		}
 	})
+
+	router.get('/meeting/:webinarKey' , async(req , res , next)=>{
+		const { webinarKey } = req.params ; 
+		let webinarInfo = await webinar.getWebinarByKey({ webinarKey });
+		
+
+
+		return res.send(webinarInfo);
+	})
+
 	router.post('/meeting/:webinarKey' , async(req , res , next)=>{
 		const { webinarKey } = req.params ; 
-		const { firstName , lastName , email } = req.body ; 
+		const { firstName , lastName , email , activityId , avatar } = req.body ; 
 		try {
-			let register =	await webinar.register({webinarKey , firstName , lastName , email });
-			return res.send(register);
+			let { joinUrl , hijackEmail } =	await webinar.register({webinarKey , firstName , lastName , email });
+			//create link
+			const data = {
+				joinUrl , 
+				webinarKey , 
+				firstName , 
+				lastName , 
+				email , 
+				hijackEmail ,
+				activityId , 
+				avatar
+			}
+			await activity.createRegisterLink(data);
+			
+			return res.send(data);
 		}catch(e){
 			console.info({ e });
 			return res.status(500).send({ error : "register meeting failed" })
 		}
-		//INSERT INTO `aws-hack`.activity (webinarKey , name ) VALUES("8180537342144951054" , "ba") ON DUPLICATE KEY UPDATE webinarKey="xxx"
+		
+	})
+	router.post('/meeting/activity/register/link' , async (req , res , next)=>{
+		const { webinarKey , activityId , firstName , lastName , email , hijackEmail , joinUrl , avatar } = req.body ; 
+		try {
+			let rows = await activity.createRegisterLink(req.body);
+			return res.send({ status : true , msg : "create link success" });
+		}catch(e){
+			console.info({ e });
+			return res.status(500).send({ error : "error to link register" });
+		}
 	})
 })
+
+
 
 app.group('/api' , (router)=>{
 	
