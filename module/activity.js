@@ -1,7 +1,8 @@
 import { pool } from './db';
 import * as webinar from './webinar';
 import sgMail from '@sendgrid/mail';
-
+import * as aws from './aws';
+import * as jwt from './jwt';
 require('dotenv').config()
 const { SENDGRID_API_KEY , SENDGRID_FROM , FRONTEND_DOMAIN } = process.env;
 
@@ -115,4 +116,61 @@ export const getMeetingByActivityId = async ({ activityId }) =>{
     })
 
 
+}
+
+
+export const getRegistrationByActivityId = async ({ activityId }) =>{
+
+    return new Promise((resolve , reject)=>{
+        pool.query(`
+            SELECT * FROM register where activityId = ?
+        ` , [ activityId ] , async(err, rows, fields)=>{
+            
+            if(err) return reject(err);
+            
+            return resolve(rows);
+
+           
+        })
+    })
+
+
+}
+
+export const faceSignin = async ({ activityId , sourceName }) =>{
+    return new Promise(async ( resolve , reject )=>{
+        let verify = false ;
+        let registerList = await getRegistrationByActivityId({ activityId });
+        console.info({ registerList });
+        let user ;
+
+        let jobs = registerList.map(async(register)=>{
+            console.info({
+                sourceName : sourceName , 
+                targetName : register.avatar
+            })
+            const r =  await aws.compareImage({
+                sourceName : sourceName , 
+                targetName : register.avatar
+            })
+            
+            r.FaceMatches.map((face)=>{
+                if(face.Similarity > 90){ verify = true }
+            })
+            user = register ; 
+            return register ; 
+        })
+
+        Promise.all(jobs).then(async (list)=>{
+
+            if(verify == true){ 
+                let accessToken = await jwt.grantAccessToken(user);
+                
+                return resolve({ accessToken , user })
+            }else{
+                return reject({ error : "auth fail" })
+            }
+        })
+    })
+   
 }

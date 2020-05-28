@@ -27,25 +27,24 @@ export function dataURItoBlob(dataURI) {
 
 
 
-export async function identifyUser(base64Image){
-    const endpoint = `${REACT_APP_API_DOMAIN}/api/face/verify`;
+export async function identifyUser(base64Image , activityId){
+    ///const endpoint = `${REACT_APP_API_DOMAIN}/api/face/verify`;
+    const endpoint = `${REACT_APP_API_DOMAIN}/api/activity/${activityId}/signin`;
+
     const formData = new FormData();
     
     formData.append('file', dataURItoBlob(base64Image));
     
-    try {
-        let { accessToken } = ( await axios.post(endpoint, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }) ).data
-        Cookie.set("accessToken" , accessToken);
-        alert("Login success");
-        return true ; 
-    }catch(e){
-        alert("Login failed");
-        return false ;
-    }
+    
+    let { accessToken , user } = ( await axios.post(endpoint, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }) ).data
+    Cookie.set("accessToken" , accessToken);
+    
+    return { user , accessToken } ;
+        
     
 
 }

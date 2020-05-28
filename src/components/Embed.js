@@ -124,6 +124,7 @@ const Embed = (props) =>{
             
             top={props.top}
             left={props.left}
+            onClick={props.onClick}
         >
             <HeaderWrapper>
                 <EmbedAnimation>

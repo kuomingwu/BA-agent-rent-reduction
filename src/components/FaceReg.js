@@ -2,7 +2,7 @@ import React , { useRef , useCallback , useState } from 'react';
 import Webcam from "react-webcam";
 import FaceRegBackgroundImg from '../assets/BA/facerecognition_background.png';
 import styled from 'styled-components';
-import { Button } from 'antd';
+import { Button , notification } from 'antd';
 import { identifyUser } from '../actions/actions';
 const FaceRegWrapper = styled.div `
     background-image : url(${FaceRegBackgroundImg}) ;
@@ -15,7 +15,7 @@ const FaceRegWrapper = styled.div `
     align-items:end ;
 `;
 
-const FaceReg = () =>{
+const FaceReg = ({activity , onSigninSuccess}) =>{
     const [ code , setCode ] = useState("");
     
     const webcamRef = React.useRef(null);
@@ -30,10 +30,21 @@ const FaceReg = () =>{
         async () => {
             const imageSrc = webcamRef.current.getScreenshot();
             try {
-                await identifyUser(imageSrc);
+                
+                const { user } = await identifyUser(imageSrc , activity.id);
+                notification.success({
+                    message : '登入成功' ,
+                    description : `歡迎你 ${user.firstName} ${user.lastName}`
+                })
+                setTimeout(()=>{
+                    onSigninSuccess();
+                }, 2000)
                 
             }catch(e){
-
+                notification.error({
+                    message : '登入失敗' ,
+                    description : `如未註冊請進行註冊`
+                })
             }
         },
         [webcamRef]

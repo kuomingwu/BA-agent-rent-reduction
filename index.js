@@ -40,6 +40,29 @@ const {
 
 app.group('/api/activity' , (router)=>{
 
+	router.post('/:activityId/signin' , upload.array('file' , 1) , async (req , res , next)=>{
+		const { activityId } = req.params ;
+		//先存到s3 , 在research all register from activity , 有比對到即登入成功
+		const fileName = "temp-"+new Date().getTime()+".jpg" ; 
+		
+		const buffer = req.files[0].buffer ;
+		
+		let r = await aws.uploadS3(buffer , fileName);
+		
+		const url = `https://${AWS_S3_BUCKET}.s3-${AWS_S3_REGION}.amazonaws.com/${fileName}`
+		 
+		try{ 
+			const { accessToken , user } = await activity.faceSignin({ sourceName : fileName , activityId })
+			res.send( { accessToken , user} ) ;
+		}catch(e){
+			console.info({e})
+			res.status(500).send({ error : "signin failed" });
+		}
+		
+
+
+	})
+
 	router.get('/:activityId' , async (req , res , next)=>{
 		const { activityId } = req.params ;
 		try {

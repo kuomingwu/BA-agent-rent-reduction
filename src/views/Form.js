@@ -1,6 +1,6 @@
 import React , { useState , useEffect } from 'react';
 import styled from 'styled-components';
-import { Input , Upload , message , Spin , Button   } from 'antd';
+import { Input , Upload , message , Spin , Button , notification  } from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router';
 import { getActivityByActivityId , registerActivity } from '../actions/actions';
@@ -68,6 +68,7 @@ const QuestionHighLightTitle = styled.h1 `
 
 const Form = () =>{
     const [ loading , setLoading ] = useState(false);
+    const [ spinning , setSpinning ] = useState(true);
     const [ imageUrl , setImageUrl ] = useState(null);
     const [ fileName , setFileName ] = useState("");
     const [ firstName , setFirstName ] = useState("");
@@ -75,13 +76,14 @@ const Form = () =>{
     const [ email , setEmail ] = useState("");
     const [ activity , setActivity ] = useState({});
     const [ init , setInit ] = useState(false);
-
+    
     const { activityId } = useParams();
 
     async function initAction(){
         const result = await getActivityByActivityId({ activityId });
         setInit(true);
         setActivity(result.activity);
+        setSpinning(false);
     }
 
     useEffect(()=>{
@@ -136,7 +138,7 @@ const Form = () =>{
     
 
     return (
-    <Spin spinning={!init}>
+    <Spin spinning={spinning}>
         <BkWrapper>
             <Wrapper>
                 {
@@ -203,17 +205,23 @@ const Form = () =>{
                     </QuestionContent>
                 </QuestionWrapper>
                 <Button onClick={async()=>{
-                    setInit(false)
+                    setSpinning(true)
                     try {
                         
                         await registerActivity({
                             activityId , firstName , lastName , email , avatar : fileName
                         });
-                        message.success('註冊成功');
-                        setInit(true);
+                        notification.success({
+                            message : '註冊成功' ,
+                            description : `訊息已發至${email}`
+                        })
+                        setSpinning(false);
                     }catch(e){
-                        message.error('註冊失敗');
-                        setInit(true);
+                        notification.success({
+                            message : '註冊失敗' ,
+                            description : `請確認資訊是否均已填寫，或請洽管理員`
+                        })
+                        setSpinning(false);
                     }
                 }} type="primary" block>
                     報名
