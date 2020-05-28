@@ -19,7 +19,8 @@ const app = express();
 const upload = multer();
 const http = require('http').Server(app);
 
-const io = require('socket.io')(http);
+let io ; 
+
 
 app.use(express.static('src'));
 app.use(express.static(path.join(__dirname, 'build')));
@@ -28,9 +29,11 @@ app.use(bearerToken());
 
 if(process.env.DEBUG_MODE == 'true'){
 	app.use(cors());
+	io = require('socket.io')(http);
 }else{
 	
 	app.use(helmet());
+	io = require('socket.io')(https);
 }
 app.set('trust proxy', 1) // trust first proxy
 
