@@ -10,13 +10,15 @@ import * as webinar from './module/webinar';
 import * as activity from './module/activity';
 import multer from 'multer';
 import bearerToken from 'express-bearer-token';
+import https from 'https';
+import fs from 'fs';
 const {parse, stringify} = require('flatted/cjs');
 require('express-group-routes');
 const session = require('express-session');
 const app = express();
 const upload = multer();
 const http = require('http').Server(app);
-const https = require('https').Server(app);
+
 const io = require('socket.io')(http);
 
 app.use(express.static('src'));
@@ -306,7 +308,13 @@ if(process.env.DEBUG_MODE == 'true'){
 		console.log('Started dev');
 	});
 }else{
-	const server = https.listen(process.env.SERVER_PORT || 3001, () => {
+	const options = {
+		key: fs.readFileSync('./ssl/private.key'),
+		cert: fs.readFileSync('./ssl/certificate.crt'),
+		ca:fs.readFileSync('./ssl/ca_bundle.crt')
+	};
+
+	const server = https.createServer(options, app).listen(process.env.SERVER_PORT || 3001, () => {
 		console.log('Started prod');
 	});
 }
