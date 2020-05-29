@@ -61,7 +61,7 @@ const FaceReg = ({activity , onSigninSuccess}) =>{
                 screenshotFormat="image/jpeg"
                 videoConstraints={videoConstraints}
             />
-            <Button onClick={capture}>Signin</Button>
+            <Button type="primary" onClick={capture}>Signin</Button>
         </FaceRegWrapper>
     )
 

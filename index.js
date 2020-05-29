@@ -336,9 +336,9 @@ if(process.env.DEBUG_MODE == 'true'){
 
 io.on('connection', (socket) => {
     socket.on('getMessage' , (data)=>{
-		let response = "嗯?";
+		let response = "晚安 洗澡去";
 		if(data == "安安妳好幾歲住哪"){ response = "已婚" }
-		if(data == "我再找一本書"){ response = "什麼書" }
+		if(data == "我在找一本書"){ response = "什麼書" }
 		if(data == "妳的臉書"){ response = "https://www.facebook.com/BATWsmartBiz/" }
 		
 

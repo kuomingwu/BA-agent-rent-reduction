@@ -3,7 +3,9 @@ import styled from 'styled-components';
 import BackgroundImage from '../../assets/AWS/awsbackground.jpg';
 import Webinar from '../../components/Webinar'
 import { getUserByToken } from '../../actions/actions';
-import { notification } from 'antd';
+import { notification , Button } from 'antd';
+import { ArrowLeftOutlined  } from '@ant-design/icons'
+
 const Background = styled.div `
     background-image : url(${BackgroundImage});
     background-repeat : no-repeat ;
@@ -13,6 +15,16 @@ const Background = styled.div `
     display:flex ; 
     justify-content : center ;
     align-items:center ;
+`
+
+const BackWrapper = styled.div `
+    position : fixed ;
+    top : 20px;
+    left : 20px;
+    cursor : pointer ; 
+    style : 2rem ;
+    color : #0d47a1 ;
+    font-weight : bold ;
 `
 
 const Room = ({ activity , onChangeScene })=>{
@@ -48,6 +60,14 @@ const Room = ({ activity , onChangeScene })=>{
 
     return (
         <Background>
+            <BackWrapper>
+                <Button type="primary" icon={<ArrowLeftOutlined></ArrowLeftOutlined>} size={`large`} 
+                    onClick={()=>{
+                        onChangeScene(0);
+                    }}
+
+                />
+            </BackWrapper>
             <Webinar joinUrl={user.joinUrl}/>
         </Background>
     )
