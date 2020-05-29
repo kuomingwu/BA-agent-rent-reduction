@@ -19,7 +19,7 @@ const app = express();
 const upload = multer();
 const http = require('http').Server(app);
 
-let io ; 
+
 
 
 app.use(express.static('src'));
@@ -29,11 +29,11 @@ app.use(bearerToken());
 
 if(process.env.DEBUG_MODE == 'true'){
 	app.use(cors());
-	io = require('socket.io')(http);
+	
 }else{
 	
 	app.use(helmet());
-	io = require('socket.io')(https);
+	
 }
 app.set('trust proxy', 1) // trust first proxy
 
@@ -292,6 +292,28 @@ app.group('/' , (router)=>{
 	
 })
 
+let io ; 
+
+if(process.env.DEBUG_MODE == 'true'){
+	const server = http.listen(process.env.SERVER_PORT || 3001, () => {
+		console.log('Started dev');
+	});
+	io = require('socket.io')(server);
+
+}else{
+	const options = {
+		key: fs.readFileSync('./ssl/private.key'),
+		cert: fs.readFileSync('./ssl/certificate.crt'),
+		ca:fs.readFileSync('./ssl/ca_bundle.crt')
+	};
+
+	const server = https.createServer(options, app).listen(process.env.SERVER_PORT || 3001, () => {
+		console.log('Started prod');
+	});
+	io = require('socket.io')(server);
+}
+
+
 io.on('connection', (socket) => {
     socket.on('getMessage' , (data)=>{
 		let response = "嗯?";
@@ -305,19 +327,3 @@ io.on('connection', (socket) => {
 		]);
 	})
 })
-
-if(process.env.DEBUG_MODE == 'true'){
-	const server = http.listen(process.env.SERVER_PORT || 3001, () => {
-		console.log('Started dev');
-	});
-}else{
-	const options = {
-		key: fs.readFileSync('./ssl/private.key'),
-		cert: fs.readFileSync('./ssl/certificate.crt'),
-		ca:fs.readFileSync('./ssl/ca_bundle.crt')
-	};
-
-	const server = https.createServer(options, app).listen(process.env.SERVER_PORT || 3001, () => {
-		console.log('Started prod');
-	});
-}
