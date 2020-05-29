@@ -48,15 +48,16 @@ EC2 S3 RDS Rekognition
 Gotowebinar Sendgrid
 
 ## FlowChart
+
+
+
 ```flow
-st=>start: Create activity and publish
-register=>operation: User register Activity
-facedetect=>operation: Face detect
-cond=>condition: face detect success or not
-e=>end: To next scene
+st=>start: Login
+op=>operation: Login operation
+cond=>condition: Successful Yes or No?
+e=>end: To admin
 
-st->register->facedetect->cond
+st->op->cond
 cond(yes)->e
-cond(no)->register
-
+cond(no)->op
 ```
