@@ -57,6 +57,6 @@ e=>end: To next scene
 
 st->register->facedetect->cond
 cond(yes)->e
-cond(no)->op1
+cond(no)->register
 
 ```
