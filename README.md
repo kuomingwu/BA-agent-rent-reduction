@@ -50,12 +50,13 @@ Gotowebinar Sendgrid
 ## FlowChart
 ```flow
 st=>start: Create activity and publish
-register=>operation : User register Activity
-face=>operation : Face detect
-facecond=>condition : face detect success or not
-e=>end:To next scene
+register=>operation: User register Activity
+facedetect=>operation: Face detect
+cond=>condition: face detect success or not
+e=>end: To next scene
 
-st->register->face->facecond
-facecond(yes)->e
-facecond(no)->register
+st->register->facedetect->cond
+cond(yes)->e
+cond(no)->op1
+
 ```
