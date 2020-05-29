@@ -174,3 +174,81 @@ export const faceSignin = async ({ activityId , sourceName }) =>{
     })
    
 }
+
+
+export const getActivityList = async () =>{
+    return new Promise((resolve , reject)=>{
+        pool.query(`
+            SELECT * FROM activity
+        ` , [ ] , async(err, rows, fields)=>{
+            
+            if(err) return reject(err);
+            
+            return resolve(rows);
+
+           
+        })
+    })
+}
+
+export const createActivity = async ({ name , scene , meetings }) =>{
+    return new Promise((resolve , reject)=>{
+        pool.getConnection(async(err, connection) => {
+            connection.beginTransaction(async(tranErr) => {
+                if(tranErr){
+                    connection.rollback(()=>{
+                        connection.release();
+                        reject(tranErr);
+                    })
+                }
+                connection.query(`
+                    INSERT INTO activity (name , scene) values (? , ?) 
+                ` , [ name , scene ] , async(err, rows, fields)=>{
+                    
+                    if(err) return reject(err);
+                    
+                    const { insertId } = rows ;
+
+                    //create meetings
+                    let jobs = meetings.map(async (meeting)=>{
+                        const { subject , description , times } = meeting ; 
+                        try {
+                            return await webinar.create({ subject , description , times });
+                        }catch(e){
+                            console.info({e});
+                            return reject(e);
+                        }
+                    })
+
+                    let webinars = await Promise.all(jobs) ;
+                    
+                    let insertData = webinars.map(({ webinarKey })=>{
+                        return [ webinarKey , insertId ]
+                    })
+                    connection.query(`
+                        INSERT INTO meeting (webinarKey , activityId) values ? 
+                    ` , [ insertData ] , async(err, rows, fields)=>{
+                            if(err){ 
+                                connection.rollback(()=>{ connection.release() })
+                                
+                                reject(err) 
+                            }else{
+                                connection.commit((err)=>{
+                                    if(err) { connection.rollback(()=>{ connection.release() }) }else{
+                                        connection.release()
+                                        resolve();
+                                    }
+                                })
+
+                            }
+
+                    })
+
+                })
+
+                
+
+            })
+        })
+    })
+}

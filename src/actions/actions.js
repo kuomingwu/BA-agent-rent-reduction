@@ -84,3 +84,19 @@ export async function getUserByToken(){
     }) ).data
 
 }
+
+
+export const getActivityList = async () =>{
+   
+    const endpoint = `${REACT_APP_API_DOMAIN}/api/activity`
+    return ( await axios.get(endpoint) ).data
+
+}
+
+
+export const createActivity = async ({ name , scene , meetings }) =>{
+   
+    const endpoint = `${REACT_APP_API_DOMAIN}/api/activity`
+    return ( await axios.post(endpoint , { name , scene , meetings } ) ).data
+
+}

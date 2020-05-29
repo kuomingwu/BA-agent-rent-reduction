@@ -45,7 +45,27 @@ const {
 } = process.env ; 
 
 app.group('/api/activity' , (router)=>{
+	router.post('/' , async(req , res , next)=>{
+		try {
+			//transaction
+			const { name , scene , meetings } = req.body ; 
+			await activity.createActivity({ name , scene , meetings });
+			res.send({ msg : "create activity success" })
+		}catch(e){
+			console.info({ e })
+			res.status(500).send({ error : "create activity failed" })
+		}
+	})
 
+	router.get('/' , async(req , res , next)=>{
+		try {
+			let list = await activity.getActivityList();
+			res.send({ list });
+		}catch(e){
+			console.info({ e });
+			res.status(500).send({ error : "get activity list error" });
+		}
+	})
 	router.post('/:activityId/signin' , upload.array('file' , 1) , async (req , res , next)=>{
 		const { activityId } = req.params ;
 		//先存到s3 , 在research all register from activity , 有比對到即登入成功

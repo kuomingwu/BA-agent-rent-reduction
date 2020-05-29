@@ -7,6 +7,7 @@ import * as Aws from './views/AwsScene/Route';
 import Form from './views/Form';
 
 import Activity from './views/Activity';
+import Portal from './views/Portal';
 
 const Wrapper = styled.div `
   width : 100vw ;
@@ -18,22 +19,8 @@ const App = () => {
   return (
     
     <Router>
-      <Route exact path={`/ba/lobby`}>
-        <Wrapper>
-          <Ba.Lobby></Ba.Lobby>
-        </Wrapper>
-      </Route>
-
-      <Route exact path={`/aws/lobby`}>
-        <Wrapper>
-          <Aws.Lobby></Aws.Lobby>
-        </Wrapper>
-      </Route>
-
-      <Route exact path={`/ba/register`}>
-        <Wrapper>
-          <Form></Form>
-        </Wrapper>
+      <Route exact path={`/`}>
+        <Portal />
       </Route>
 
       <Route exact path={`/activity/:activityId`}>
