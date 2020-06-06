@@ -4,6 +4,7 @@ import 'antd/dist/antd.css';
 import * as Ba from './views/BaScene/Route';
 import styled from 'styled-components';
 import * as Aws from './views/AwsScene/Route';
+import * as AwsHack from './views/AwsHackScene/Route';
 import Form from './views/Form';
 
 import Activity from './views/Activity';

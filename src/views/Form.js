@@ -6,7 +6,7 @@ import { useParams } from 'react-router';
 import { getActivityByActivityId , registerActivity } from '../actions/actions';
 import * as Ba from './BaScene/Route';
 import * as Aws from './AwsScene/Route';
-
+import * as AwsHack from './AwsHackScene/Route';
 
 require('dotenv').config()
 
@@ -151,7 +151,11 @@ const Form = () =>{
                         <Banner image={Aws.Banner} />
                     )
                 }
-               
+                {
+                    (activity.scene == "awshack") && (
+                        <Banner image={AwsHack.Banner} />
+                    )
+                }
 
                 <QuestionWrapper>
                     <QuestionContent>

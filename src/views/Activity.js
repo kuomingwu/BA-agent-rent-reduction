@@ -5,6 +5,7 @@ import { useParams } from 'react-router';
 import { Route , Switch } from 'react-router-dom';
 import * as Ba from './BaScene/Route';
 import * as Aws from './AwsScene/Route';
+import * as AwsHack from './AwsHackScene/Route';
 import {  Spin , Button , notification } from 'antd';
 const Wrapper = styled.div `
   width : 100vw ;
@@ -41,6 +42,11 @@ const Activity = () =>{
             {
                 (activity.scene == "aws") && (
                     <Aws.Scene activity={activity}></Aws.Scene>
+                )
+            }
+            {
+                (activity.scene == "awshack") && (
+                    <AwsHack.Scene activity={activity}></AwsHack.Scene>
                 )
             }
         </Wrapper>

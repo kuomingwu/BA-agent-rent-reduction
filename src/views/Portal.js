@@ -4,6 +4,7 @@ import { getActivityList , createActivity } from '../actions/actions';
 import { Card , notification , Button , Select  , DatePicker , Modal , Input } from 'antd';
 import AwsBackgound from '../assets/AWS/awsbackground.jpg';
 import BaBackgound from '../assets/BA/informationcounter.jpg';
+import AwsHackBackground from '../assets/AwsHack/informationcounter.jpg';
 import { useHistory } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 
@@ -44,7 +45,7 @@ const Portal = () =>{
     const [ visible ,  setVisible ] = useState(false);
     
     const [ activityName , setActivityName ] = useState("");
-    const [ scene , setScene ] = useState("ba"); // for modal
+    const [ scene , setScene ] = useState("awshack"); // for modal
     const [ times , setTimes ] = useState({});
 
     //簡化 只用一組
@@ -77,6 +78,19 @@ const Portal = () =>{
 
     }, [init])
 
+    const renderCover = ({scene}) =>{
+
+        if(scene == "ba"){
+            return <Background source={BaBackgound} />
+        }
+        if(scene == "aws"){
+            return <Background source={AwsBackgound} />
+        }
+        if(scene == "awshack"){
+            return <Background source={AwsHackBackground} />
+        }
+    }
+
     return (
         <Wrapper>
             {
@@ -88,11 +102,7 @@ const Portal = () =>{
                                 history.push(`/activity/${activity.id}`)
                             }}
                             cover={
-                                (activity.scene == "ba") ?    
-                                    <Background source={BaBackgound} />
-                                : 
-                                    <Background source={AwsBackgound} />
-                                
+                                renderCover(activity)
                             }
                         >
                             <Meta title={ activity.name } description={`type : ${activity.scene}`} />
@@ -135,9 +145,11 @@ const Portal = () =>{
                 <CreateTitle>活動名稱</CreateTitle>
                     <Input placeholder="活動名稱" onChange={(e)=>setActivityName(e.target.value)}></Input>
                 <CreateTitle>活動模板</CreateTitle>
-                <Select defaultValue="ba" style={{ width: 120 }} onChange={(value)=>{
+                <Select defaultValue="awshack" style={{ width: '100%' }} onChange={(value)=>{
+                    
                     setScene(value);
                 }}>
+                    <Option value="awshack">Aws hack demo 模板 (1 conference meeting)</Option>
                     <Option value="ba">Business Agent 模板 (1 conference meeting)</Option>
                     <Option value="aws">AWS會議 模板 (1 conference meeting)</Option>
                 </Select>
